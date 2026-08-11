@@ -1,11 +1,13 @@
+cat > src/wrangler.jsonc <<'EOF'
 {
   "name": "y-si-hablamos",
-  "main": "worker.js",
+  "main": "./worker.js",
   "compatibility_date": "2026-08-11",
   "compatibility_flags": [
     "nodejs_compat"
   ],
   "assets": {
-    "directory": "./dist"
+    "directory": "../dist"
   }
 }
+EOF
