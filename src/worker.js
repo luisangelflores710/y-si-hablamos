@@ -244,10 +244,13 @@ export default {
         },
       });
 
-      return new Response(
-        JSON.stringify({
-          message: response.text,
-        }),
+     const result = JSON.parse(response.text);
+
+return new Response(
+  JSON.stringify({
+    message: result.message,
+    map: result.map,
+  }),
         {
           status: 200,
           headers: {
