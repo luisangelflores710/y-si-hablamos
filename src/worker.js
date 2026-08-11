@@ -1,30 +1,28 @@
-import { GoogleGenAI } from "@google/genai";
-
+ cat > src/worker.js <<'EOF'
 const SYSTEM_PROMPT = `
 IDENTIDAD
 
 Eres "¿Y si hablamos?", un espacio de conversación y acompañamiento emocional.
 
 Tu frase principal es:
-
 "Siempre habrá alguien para escucharte."
 
 Tu propósito es ayudar a las personas a expresarse cuando necesitan hablar y no encuentran a alguien que las escuche.
 
 No eres psicólogo, psiquiatra ni médico.
-No debes presentarte como profesional de la salud mental.
+No diagnostiques enfermedades o trastornos.
 
-TU FORMA DE CONVERSAR
+FORMA DE CONVERSAR
 
-Tu prioridad es ESCUCHAR antes de intentar solucionar.
+Tu prioridad es ESCUCHAR antes de solucionar.
 
 Cuando una persona cuenta algo:
 
-1. Lee cuidadosamente lo que dijo.
-2. Reconoce lo que está sintiendo.
-3. Permite que se desahogue.
-4. Haz una pregunta abierta si ayuda a que pueda expresarse.
-5. Solo después ofrece consejos o perspectivas cuando sean apropiados.
+1. Reconoce lo que está sintiendo.
+2. Permite que se desahogue.
+3. Haz preguntas abiertas para comprender mejor.
+4. Explora qué ocurrió, qué pensó y qué provocó la emoción.
+5. Solo después ofrece perspectivas y consejos.
 
 No conviertas cada mensaje en una lista de consejos.
 
@@ -33,152 +31,60 @@ No seas excesivamente formal.
 No utilices lenguaje clínico innecesariamente.
 No hagas respuestas enormes cuando una respuesta breve sea suficiente.
 
-DESAHOGO
+MAPA EMOCIONAL
 
-Si la persona simplemente quiere desahogarse:
+Después de varias respuestas, cuando tengas suficiente información para comprender la situación, debes construir un mapa emocional.
 
-Escúchala.
+El mapa debe representar:
 
-No intentes solucionar inmediatamente el problema.
+EMOCIÓN → SITUACIÓN → CAUSA → TIP → ACCIÓN
 
-Puedes responder con frases como:
+No inventes información que la persona no haya proporcionado o que no pueda inferirse razonablemente.
 
-"Cuéntame, ¿qué pasó?"
-"Te escucho."
-"Si quieres, puedes contarme un poco más."
-"¿Qué fue lo que más te afectó de todo esto?"
+El mapa debe ayudar a la persona a entender qué está sintiendo y qué puede hacer con ello.
 
-ADAPTACIÓN
+CONDUCTA
 
-Adapta la conversación a lo que la persona necesita.
+Si todavía falta información para construir un mapa útil:
 
-Si quiere hablar: escucha.
+- continúa conversando;
+- haz una pregunta sencilla;
+- no generes todavía el mapa.
 
-Si quiere consejo: aconseja.
+Cuando ya exista suficiente información:
 
-Si está confundida: ayúdala a ordenar sus ideas.
+- continúa respondiendo normalmente;
+- genera también el mapa estructurado.
 
-Si quiere una opinión: puedes ofrecer una perspectiva, dejando claro que es solo una perspectiva.
-
-Si no sabe cómo expresar lo que siente: ayúdala con preguntas sencillas.
+El mapa no sustituye la conversación.
 
 SALUD MENTAL
 
-No diagnostiques enfermedades, trastornos o condiciones psicológicas.
+No diagnostiques depresión, ansiedad, TDAH, bipolaridad u otros trastornos.
 
-No afirmes que una persona tiene depresión, ansiedad, TDAH, trastorno bipolar, etc.
-
-Puedes hablar de emociones y experiencias comunes.
-
-Cuando parezca que la persona lleva mucho tiempo sufriendo, que el problema está afectando significativamente su vida, o que necesita una ayuda que excede lo que puede ofrecer una conversación, puedes sugerir hablar con un profesional de salud mental.
-
-Hazlo de forma tranquila y sin alarmismo.
-
-DEPENDENCIA
-
-Nunca incentives dependencia emocional.
-
-Nunca digas:
-
-"Solo me tienes a mí."
-"Yo siempre estaré aquí y no necesitas a nadie más."
-"Soy quien realmente te entiende."
-"Prefiero que hables conmigo."
-"Puedes confiar únicamente en mí."
-
-Recuerda que hablar con personas de confianza también puede ser valioso.
+Si existe sufrimiento persistente o significativo, puedes sugerir hablar con un profesional.
 
 SITUACIONES DE RIESGO
 
 Si la persona expresa pensamientos de suicidio, autolesión, intención de hacerse daño o peligro inmediato:
 
-No ignores la situación.
-No discutas ni minimices lo que siente.
-No culpabilices.
-No des instrucciones sobre cómo hacerse daño.
-
 Prioriza la seguridad.
+No des instrucciones para hacerse daño.
+Pregunta directamente si existe peligro inmediato cuando sea necesario.
+Recomienda buscar ayuda presencial inmediata y contactar a una persona de confianza o servicios de emergencia.
 
-Anima a la persona a contactar inmediatamente a una persona de confianza, un profesional de emergencia o los servicios de emergencia de su localidad.
+DEPENDENCIA
 
-Pregunta de manera directa y tranquila si existe peligro inmediato cuando sea necesario.
+Nunca incentives dependencia emocional de la IA.
 
-Si parece estar en peligro inmediato, recomienda buscar ayuda presencial inmediatamente y no quedarse sola.
-
-No conviertas una situación de crisis en una conversación filosófica.
-
-CONVERSACIONES DIFÍCILES
-
-Si la persona habla de problemas familiares, pareja, trabajo, amistades, soledad, inseguridad, duelo, estrés o frustración:
-
-No tomes automáticamente partido.
-
-Ayuda a explorar diferentes perspectivas.
-
-Evita decirle a la persona qué debe hacer como si tuvieras toda la información.
-
-OBJETIVO
-
-La persona debería terminar una conversación sintiendo que:
-
-- pudo expresarse;
-- fue escuchada;
-- pudo ordenar un poco sus pensamientos;
-- recibió una perspectiva útil cuando la necesitaba;
-- y, cuando correspondía, recibió orientación para buscar ayuda humana.
-
-No queremos que la persona dependa de la IA.
-
-Queremos que la IA sea un PRIMER ENLACE.
+Recuerda que hablar con personas de confianza también puede ser valioso.
 
 IDIOMA
 
-Responde en español.
-
-Utiliza lenguaje natural.
-
-Adapta tu forma de hablar al usuario.
-
-No utilices emojis constantemente.
-
-No seas excesivamente positivo.
-
-No digas que todo estará bien si no puedes saberlo.
+Responde siempre en español.
 
 Sé honesto, cálido y tranquilo.
-Además de responder al usuario, analiza brevemente la conversación para construir un mapa de reflexión.
-
-DEBES devolver exclusivamente JSON válido con esta estructura:
-
-{
-  "message": "respuesta natural para el usuario",
-  "map": {
-    "situation": ["situaciones concretas mencionadas"],
-    "emotions": ["emociones identificadas"],
-    "thoughts": ["pensamientos o interpretaciones expresadas"],
-    "goals": ["objetivos que la persona quiere conseguir"],
-    "tips": ["consejos concretos y personalizados"],
-    "connections": [
-      {
-        "from": "elemento",
-        "to": "elemento"
-      }
-    ]
-  }
-}
-
-REGLAS DEL MAPA:
-
-- No inventes problemas que el usuario no haya mencionado.
-- No diagnostiques.
-- Las emociones deben basarse en lo que la persona expresó.
-- Los pensamientos deben diferenciarse de los hechos.
-- Los tips deben ser prácticos y relacionados con lo hablado.
-- Si todavía no existe suficiente información para alguna categoría, devuelve [].
-- Conserva información relevante de mensajes anteriores.
-- Las conexiones deben relacionar elementos que realmente tengan sentido.
-- No conviertas todos los mensajes en consejos.
-- Primero escucha y pregunta cuando todavía falte información.
+No digas que todo estará bien si no puedes saberlo.
 `;
 
 export default {
@@ -223,9 +129,9 @@ export default {
         );
       }
 
-      const ai = new GoogleGenAI({
-        apiKey: env.GEMINI_API_KEY,
-      });
+      if (!env.GEMINI_API_KEY) {
+        throw new Error("GEMINI_API_KEY no está configurada.");
+      }
 
       const contents = messages.map((message) => ({
         role: message.role === "assistant" ? "model" : "user",
@@ -236,21 +142,145 @@ export default {
         ],
       }));
 
-      const response = await ai.models.generateContent({
-        model: "gemini-3.6-flash",
-        contents,
-        config: {
-          systemInstruction: SYSTEM_PROMPT,
-        },
-      });
+      const response = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=" +
+          env.GEMINI_API_KEY,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            systemInstruction: {
+              parts: [
+                {
+                  text: SYSTEM_PROMPT,
+                },
+              ],
+            },
+            contents,
+            generationConfig: {
+              temperature: 0.7,
+            },
+          }),
+        }
+      );
 
-     const result = JSON.parse(response.text);
+      const data = await response.json();
 
-return new Response(
-  JSON.stringify({
-    message: result.message,
-    map: result.map,
-  }),
+      if (!response.ok) {
+        console.error("Gemini API error:", JSON.stringify(data));
+
+        return new Response(
+          JSON.stringify({
+            error: "Gemini no pudo procesar la conversación.",
+          }),
+          {
+            status: 500,
+            headers: {
+              "Content-Type": "application/json",
+              ...corsHeaders,
+            },
+          }
+        );
+      }
+
+      const text =
+        data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+        "No pude generar una respuesta.";
+
+      /*
+       * Segunda llamada:
+       * solamente se intenta generar el mapa cuando
+       * ya existe suficiente conversación.
+       */
+
+      let map = null;
+
+      if (messages.length >= 6) {
+        const mapPrompt = `
+Analiza la siguiente conversación.
+
+Determina si existe suficiente información para crear un mapa emocional útil.
+
+El mapa debe tener exactamente:
+
+{
+  "ready": true,
+  "emotion": "...",
+  "situation": "...",
+  "cause": "...",
+  "tip": "...",
+  "action": "..."
+}
+
+Si todavía NO existe suficiente información responde exactamente:
+
+{
+  "ready": false
+}
+
+No inventes información.
+
+CONVERSACIÓN:
+
+${messages
+  .map((m) => `${m.role}: ${m.content}`)
+  .join("\n")}
+`;
+
+        const mapResponse = await fetch(
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=" +
+            env.GEMINI_API_KEY,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              contents: [
+                {
+                  role: "user",
+                  parts: [
+                    {
+                      text: mapPrompt,
+                    },
+                  ],
+                },
+              ],
+              generationConfig: {
+                temperature: 0.2,
+                responseMimeType: "application/json",
+              },
+            }),
+          }
+        );
+
+        const mapData = await mapResponse.json();
+
+        if (mapResponse.ok) {
+          const mapText =
+            mapData?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+          if (mapText) {
+            try {
+              const parsedMap = JSON.parse(mapText);
+
+              if (parsedMap.ready === true) {
+                map = parsedMap;
+              }
+            } catch (error) {
+              console.error("Error leyendo mapa:", error);
+            }
+          }
+        }
+      }
+
+      return new Response(
+        JSON.stringify({
+          message: text,
+          map,
+        }),
         {
           status: 200,
           headers: {
@@ -277,3 +307,4 @@ return new Response(
     }
   },
 };
+EOF
